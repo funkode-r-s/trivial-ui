@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .container {
+            border: 1px black solid;
+        }
+        .outermost {
+            height: 500px;
+            background-color: aliceblue;
+            text-align: center;
+        }
+        .child {
+            border-color: green;
+            height: 300px;
+            width: calc(100% - 200px);
+            background-color: coral;
+        }
+        .inner-child {
+            border-color: red;
+            height: 100px;
+            width: calc(100% - 200px);
+        }
+        .sol1 .container, .sol1 .center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            margin: 0;
+        }
+        .sol1 .outermost {
+            position: relative;
+            transform: none;
+            left: unset;
+        }
+        .sol2 .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="sol1">
+        <div class="outermost container">
+            Div 1
+            <div class="child container">
+                Div 2
+                <div class="inner-child container">
+                    <span class="center">Div 3</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sol2">
+        <div class="outermost container">
+            <span>Div 1</span>
+            <div class="child container">
+                <span>Div 2</span>
+                <div class="inner-child container">
+                    Div 3
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

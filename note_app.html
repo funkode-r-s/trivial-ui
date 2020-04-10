@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Note App</title>
+    <style>
+
+        body {
+            background-color: aliceblue;
+        }
+
+        .content:focus, .btn:focus {
+            outline: none;
+        }
+
+        .btn {
+            border: 1px solid darkgray;
+            position: relative;
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            font-size: large;
+            cursor: pointer;
+        }
+
+        .btn .symbol {
+            position: absolute;
+            left: 4px;
+            top: -3px;
+        }
+
+        .note {
+            min-height: 240px;
+            width: 240px;
+            border: 1px solid black;
+            border-radius: 4px;
+            display: inline-block;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .btn.delete {
+            background-color: orangered;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+
+        .content {
+            width: 100%;
+            box-sizing: border-box;
+            background-color: transparent;
+            padding: 5px 10px;
+            margin-top: 20px;
+            font-family: fantasy;
+            letter-spacing: 2px;
+            line-height: 2;
+            color: white;
+        }
+
+        .title {
+            border: 0;
+            border-bottom: 1px solid black;
+        }
+
+        .description {
+            border: 1px solid darkgray;
+            margin: 10px 0;
+            resize: vertical;
+        }
+
+        .content::placeholder {
+            color: red;
+            padding-top: 3px;
+        }
+
+        .btn.plus {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            background-color: lightyellow;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .btn.plus .symbol {
+            position: absolute;
+            left: 9px;
+            top: -3px;
+            font-size: xx-large;
+        }
+
+        /* Themes */
+
+        .theme-options {
+            margin-bottom: 10px;
+        }
+
+        .theme-options .btn {
+            display: inline-block;
+            margin: 0 13px;
+        }
+
+        .light .content {
+            color: red;
+        }
+
+        .dark .content::placeholder {
+            color: white;
+        }
+
+        .dark .btn.delete {
+            background-color: white;
+        }
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.28/angular.min.js"></script>
+    <script>
+        var module = angular.module("note.app", []);
+        module.controller("noteController", ["$scope", function($scope) {
+            // Note title style variables
+            $scope.titleMaxLength = 40;
+            $scope.titlePlaceholder = 'Title (' + $scope.titleMaxLength + ' characters limit)';
+            // Note background options
+            var lightGreyTheme = {
+                    id: 1,
+                    backgroundColor: 'lightgrey',
+                    type: 'light'
+                },
+                lightBlueTheme = {
+                    id: 2,
+                    backgroundColor: 'lightblue',
+                    type: 'light'
+                },
+                yellowTheme = {
+                    id: 3,
+                    backgroundColor: 'yellow',
+                    type: 'light'
+                },
+                lightYellowTheme = {
+                    id: 4,
+                    backgroundColor: 'lightyellow',
+                    type: 'light'
+                },
+                greenTheme = {
+                    id: 5,
+                    backgroundColor: 'green',
+                    type: 'dark'
+                },
+                lightGreenTheme = {
+                    id: 6,
+                    backgroundColor: 'lightgreen',
+                    type: 'light'
+                };
+
+            $scope.themes = [lightGreyTheme, lightBlueTheme, yellowTheme, lightYellowTheme, greenTheme, lightGreenTheme];
+            // Notes available for display
+            var blankNote = {
+                showAllThemes: false,
+                title: '',
+                description: '',
+                theme: lightYellowTheme
+            }
+            $scope.notes = [angular.copy(blankNote)];
+
+            $scope.addBlankNote = function() {
+                $scope.notes.push(angular.copy(blankNote));
+            };
+
+            $scope.deleteNote = function(index) {
+                if ($scope.notes.length > 1) {
+                    $scope.notes.splice(index, 1);
+                    return;
+                }
+                angular.extend($scope.notes[index], blankNote);
+            };
+
+            $scope.showTheme = function(note, theme) {
+                var selected = note.theme.id == theme.id;
+                if (note.showAllThemes) {
+                    console.log(note, theme, !selected);
+                    return !selected;
+                }
+                console.log(note, theme, selected);
+                return selected;
+            };
+
+            $scope.changeTheme = function(note, theme) {
+                console.log("changing theme");
+                note.showAllThemes = false;
+                note.theme = theme;
+            };
+        }]);
+    </script>
+</head>
+<body ng-app="note.app" data-ng-controller="noteController">
+    <div class="note" style="background-color: {{ note.theme.backgroundColor }}" data-ng-class="note.theme.type"
+         data-ng-if="notes.length" data-ng-repeat="note in notes">
+
+        <button class="btn delete" data-ng-click="deleteNote($index)">
+            <span class="symbol">&times;</span>
+        </button>
+
+        <input type="text" class="title content" data-ng-model="note.title"
+               maxlength="{{ titleMaxLength }}" placeholder="{{ titlePlaceholder }}">
+
+        <textarea name="description" class="description content" data-ng-model="note.description"
+                  rows="12" placeholder="Your content goes here...">
+        </textarea>
+
+        <div class="theme-options">
+            <div class="btn bg-selector" style="background-color: {{ theme.backgroundColor }}"
+                 data-ng-repeat="theme in themes" data-ng-click="changeTheme(note, theme)"
+                 data-ng-show="note.theme.id != theme.id">
+            </div>
+        </div>
+    </div>
+    <button class="btn plus" data-ng-click="addBlankNote()">
+        <span class="symbol">+</span>
+    </button>
+</body>
+</html>
